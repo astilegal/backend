@@ -11,7 +11,7 @@ app.use(cors());  // Allow requests from different origins
 
 // Create a connection to the MySQL database
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || '192.168.1.10',
   user: process.env.DB_USER || 'viewcounter_user',
   password: process.env.DB_PASSWORD || 'your_password',
   database: process.env.DB_NAME || 'view_counter'
