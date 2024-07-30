@@ -1,19 +1,20 @@
 // Import required modules
 const express = require('express');
 const mysql = require('mysql2');
-const dotenv = require('dotenv');
+const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 3000; // Use environment variable for port
+const port = process.env.PORT || 3000;
 
-// Load environment variables from .env file
-dotenv.config();
+// Middleware to parse JSON bodies
+app.use(express.json());
+app.use(cors());  // Allow requests from different origins
 
 // Create a connection to the MySQL database
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'viewcounter_user',
+  password: process.env.DB_PASSWORD || 'your_password',
+  database: process.env.DB_NAME || 'view_counter'
 });
 
 // Connect to the MySQL database
@@ -25,9 +26,7 @@ db.connect((err) => {
   console.log('Connected to database');
 });
 
-// Middleware to parse JSON bodies
-app.use(express.json());
-
+// Endpoint to increment the view count
 // Endpoint to increment the view count
 app.post('/increment', (req, res) => {
   const sql = 'UPDATE views SET count = count + 1 WHERE id = 1';
@@ -39,6 +38,7 @@ app.post('/increment', (req, res) => {
     res.send('View count incremented');
   });
 });
+
 
 // Endpoint to get the current view count
 app.get('/count', (req, res) => {
