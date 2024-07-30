@@ -15,6 +15,6 @@
     "express": "^4.19.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.11.0",
-    "dotenv": "^16.0.3"  // Add dotenv here
+    "dotenv": "^16.0.3" 
   }
 }
