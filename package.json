@@ -9,7 +9,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "@xata.io/client": "^0.25.0"
+    "@xata.io/client": "^0.28.0"
   },
   "engines": {
     "node": "18.x"
