@@ -11,8 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "@xata.io/client": "^0.30.0",
     "cors": "^2.8.5",
     "express": "^4.19.2"
+    
   }
 }
