@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { XataClient } = require('@xata.io/client');
+const { getXataClient } = require('@xata.io/client');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -10,10 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 // Initialize Xata client
-const xata = new XataClient({
-  databaseURL: process.env.XATA_DATABASE_URL,
-  apiKey: process.env.XATA_API_KEY
-});
+const xata = getXataClient();
 
 // Endpoint to increment the view count
 app.post('/increment', async (req, res) => {
