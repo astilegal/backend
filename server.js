@@ -1,55 +1,52 @@
-// Import required modules
 const express = require('express');
-const mysql = require('mysql2');
 const cors = require('cors');
+const { XataClient } = require('@xata.io/client');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON bodies
+// Middleware
 app.use(express.json());
-app.use(cors());  // Allow requests from different origins
+app.use(cors());
 
-// Create a connection to the MySQL database
-const db = mysql.createConnection({
-  host: process.env.DB_HOST || '192.168.1.10',
-  user: process.env.DB_USER || 'viewcounter_user',
-  password: process.env.DB_PASSWORD || 'your_password',
-  database: process.env.DB_NAME || 'view_counter'
-});
-
-// Connect to the MySQL database
-db.connect((err) => {
-  if (err) {
-    console.error('Database connection error:', err);
-    process.exit(1); // Exit the process if there's a connection error
-  }
-  console.log('Connected to database');
+// Initialize Xata client
+const xata = new XataClient({
+  databaseURL: process.env.XATA_DATABASE_URL,
+  apiKey: process.env.XATA_API_KEY
 });
 
 // Endpoint to increment the view count
-// Endpoint to increment the view count
-app.post('/increment', (req, res) => {
-  const sql = 'UPDATE views SET count = count + 1 WHERE id = 1';
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error('Error updating view count:', err);
-      return res.status(500).send('Server error');
+app.post('/increment', async (req, res) => {
+  try {
+    const record = await xata.db.views.filter({ id: 1 }).getFirst();
+    if (record) {
+      const updatedRecord = await xata.db.views.update(record.id, {
+        count: record.count + 1
+      });
+      res.json({ count: updatedRecord.count });
+    } else {
+      const newRecord = await xata.db.views.create({ id: 1, count: 1 });
+      res.json({ count: newRecord.count });
     }
-    res.send('View count incremented');
-  });
+  } catch (error) {
+    console.error('Error updating view count:', error);
+    res.status(500).send('Server error');
+  }
 });
-
 
 // Endpoint to get the current view count
-app.get('/count', (req, res) => {
-  const sql = 'SELECT count FROM views WHERE id = 1';
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error('Error retrieving view count:', err);
-      return res.status(500).send('Server error');
+app.get('/count', async (req, res) => {
+  try {
+    const record = await xata.db.views.filter({ id: 1 }).getFirst();
+    if (record) {
+      res.json({ count: record.count });
+    } else {
+      res.json({ count: 0 });
     }
-    res.json({ count: result[0].count });
-  });
+  } catch (error) {
+    console.error('Error retrieving view count:', error);
+    res.status(500).send('Server error');
+  }
 });
 
 // Start the server
